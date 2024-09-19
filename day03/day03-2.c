@@ -1,5 +1,5 @@
 #include <stdio.h>
-int pactorial(num);
+int factorial(int num);
 
 int main() {
 	int num;
@@ -7,20 +7,22 @@ int main() {
 	printf("계산할 팩토리얼 값 입력 : ");
 	scanf_s("%d", &num);
 
-	int result = pactorial(num);
+	int result = factorial(num);
 
 	printf("%d! = %d", num, result);
 
 	return 0;
 }
 
-int pactorial(num) {
-	int result = 1;
+int factorial(int num) {
+	int result;
 
-	if (num == 1)
+	if (num == 0 || num == 1) {
+		result = 1;
 		return 1;
+	}
 	else
-		result = num * pactorial(num - 1);
+		result = num * factorial(num - 1);
 
 	return result;
 }
