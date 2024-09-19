@@ -19,7 +19,7 @@ int check(a, b)
 {
 	int res = 0;
 
-	if (a / b == a && a / a == 1 && a % 2 != 0 && a % 3 != 0)
+	if (a / b == a && a / a == 1 && a % 2 != 0 && a % 3 != 0 && a % 5 != 0 && a % 7 != 0)
 		printf("해당 수는 소수입니다.\n");
 	else
 		printf("해당 수는 소수가 아닙니다.\n");
