@@ -1,28 +1,29 @@
 #include <stdio.h>
-int check(a, b);
+int is_prime_number(int num);
 
 int main()
 {
-	int num1;
-	int num2 = 1;
-	int result;
+	int num;
 
 	printf("소수인지 확인할 수를 입력하세요 : ");
-	scanf_s("%d", &num1);
+	scanf_s("%d", &num);
 
-	result = check(num1, num2);
-
-	return 0;
-}
-
-int check(a, b)
-{
-	int res = 0;
-
-	if (a / b == a && a / a == 1 && a % 2 != 0 && a % 3 != 0 && a % 5 != 0 && a % 7 != 0)
+	int res = is_prime_number(num);
+	
+	if (res == 1)
 		printf("해당 수는 소수입니다.\n");
 	else
 		printf("해당 수는 소수가 아닙니다.\n");
+	
+	return 0;
+}
 
-	return res;
+int is_prime_number(int num)
+{
+	for (int i = 2; i < num; i++) {
+		if (num % i == 0) {
+			return 0;
+		}
+	}
+	return 1;
 }
