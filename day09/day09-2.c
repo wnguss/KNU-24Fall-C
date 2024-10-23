@@ -44,7 +44,6 @@ int main() {
 
 			for (int k = 0; k <= i; k++)
 				printProduct(item[k]);
-			break;
 		}
 	}
 
