@@ -79,8 +79,11 @@ int main() {
 			outter(v1, v2);
 		else if (order == 4)
 			inner(v1, v2);
-		else if (order == 5)
+		else if (order == 5) {
+			printf("프로그램을 종료합니다.\n");
+			printf("--------------------------\n");
 			break;
+		}
 		else
 			printf("적절한 명령 값이 아닙니다.\n");
 		printf("\n--------------------------\n");
