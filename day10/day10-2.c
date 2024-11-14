@@ -118,34 +118,42 @@ int delete_node(char* customerName) {
 }
 
 void change_nodes(char* customerName) {
-    struct NODE* prev = head;
     struct NODE* cur = head->next;
-
-    int rank;
-    int amount;
-    int point;
 
     while (cur != NULL) {
         if (strcmp(customerName, cur->customerName) == 0) {
-            printf("수정할 고객의 랭크 : ");
+
+            int rank;
+            int amount;
+            int point;
+
+            printf("새로운 고객 등급 (0~4) : ");
             scanf_s("%d", &rank);
+            cur->customerRank = (enum rank)rank;
 
-            printf("수정할 고객의 구매량 : ");
+            printf("새로운 구매량 : ");
             scanf_s("%d", &amount);
+            cur->order_amount = amount;
 
-            printf("수정할 고객의 포인트 : ");
+            printf("새로운 포인트 : ");
             scanf_s("%d", &point);
+            cur->point = point;
 
-            delete_node(customerName);
+            if (cur->prev != NULL) {
+                cur->prev->next = cur->next;
+            }
 
-            insert_node_priority(create_node(customerName, rank, amount, point));
+            if (cur->next != NULL) {
+                cur->next->prev = cur->prev;
+            }
+
+            insert_node_priority(cur);
 
             return 1;
         }
-
-        prev = cur;
         cur = cur->next;
     }
+    printf("해당 고객을 찾을 수 없습니다.\n");
 }
 
 int main() {
