@@ -160,26 +160,25 @@ int main() {
     head = (struct NODE*)malloc(sizeof(struct NODE));
     head->next = NULL;
 
-    int inst;
-    int iteration = 1;
+    int order;
+    int end = 1;
 
     char name[50];
     int rank;
     int amount;
     int point;
 
-    while (iteration) {
+    while (end) {
         printf("1. 고객 추가\n");
         printf("2. 고객 삭제\n");
         printf("3. 고객 정보 수정\n");
         printf("4. 전체 리스트 출력\n");
         printf("5. 프로그램 종료\n");
         printf("명령 입력 : ");
-        scanf_s("%d", &inst);
+        scanf_s("%d", &order);
         printf("\n");
 
-        switch (inst) {
-        case 1:
+        if (order == 1) {
             printf("고객 이름 : ");
             scanf_s("%s", name, 50);
 
@@ -194,31 +193,27 @@ int main() {
             printf("\n");
 
             insert_node_priority(create_node(name, (enum rank)rank, amount, point));
+        }
 
-            break;
-
-        case 2:
+        if (order == 2) {
             printf("삭제할 고객의 이름 : ");
             scanf_s("%s", name, 50);
             delete_node(name);
-            break;
+        }
 
-        case 3:
+        if (order == 3) {
             printf("수정할 고객의 이름 : ");
             scanf_s("%s", name, 50);
 
             change_nodes(name);
+        }
 
-            break;
-
-        case 4:
+        if (order == 4) {
             print_nodes();
-            break;
+        }
 
-        case 5:
-        default:
-            iteration = 0;
-            break;
+        if (order == 5) {
+            end = 0;
         }
     }
 
