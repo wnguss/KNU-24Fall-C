@@ -2,11 +2,9 @@
 #include<stdlib.h>
 #include<string.h>
 
-#define NAME_MAX 50
-
 struct NODE
 {
-	char name[NAME_MAX];
+	char name[50];
 	int score;
 	struct NODE* link;
 };
@@ -16,7 +14,7 @@ struct NODE* head;
 struct NODE* create_node(char* name, int score)
 {
 	struct NODE* new_node = (struct NODE*)malloc(sizeof(struct NODE));
-	strcpy_s(new_node->name, NAME_MAX, name);
+	strcpy_s(new_node->name, 50, name);
 	new_node->score = score;
 	new_node->link = NULL;
 
@@ -38,11 +36,9 @@ struct NODE* find_node_insert(int score)
 	struct NODE* cur = head->link;
 	if (cur == NULL) return head;
 
-
 	while (cur != NULL) {
 		if (cur->score >= score) {
 			if (cur->link == NULL) return cur;
-
 			prev = cur;
 			cur = cur->link;
 		}
@@ -98,41 +94,34 @@ int main()
 	head = (struct NODE*)malloc(sizeof(struct NODE));
 	head->link = NULL;
 
-	int inst;
-	int iteration = 1;
+	int order;
+	int end = 1;
 
-	char name[NAME_MAX];
+	char name[50];
 	int score;
 
-	while (iteration) {
-		printf("1. ÇĞ»ı ¼ºÀû ÀÔ·Â\n");
-		printf("2. ÇĞ»ı »èÁ¦\n");
-		printf("3. ÇÁ·Î±×·¥ Á¾·á\n");
-		printf("¸í·É ÀÔ·Â : ");
-		scanf_s("%d", &inst);
-		
-		switch (inst)
-		{
-		case 1:
-			printf("ÇĞ»ı ÀÌ¸§ : ");
-			scanf_s("%s", name, NAME_MAX);
+	while (end) {
+		printf("1. í•™ìƒ ì„±ì  ì…ë ¥\n");
+		printf("2. í•™ìƒ ì‚­ì œ\n");
+		printf("3. í”„ë¡œê·¸ë¨ ì¢…ë£Œ\n");
+		printf("ëª…ë ¹ ì…ë ¥ : ");
+		scanf_s("%d", &order);
 
-			printf("Á¡¼ö : ");
+		if (order == 1) {
+			printf("í•™ìƒ ì´ë¦„ : ");
+			scanf_s("%s", name, 50);
+
+			printf("ì ìˆ˜ : ");
 			scanf_s("%d", &score);
 
 			insert_node_priority(create_node(name, score));
-
-			break;
-		case 2:
-			printf("»èÁ¦ÇÒ ÇĞ»ıÀÇ ÀÌ¸§ : ");
-			scanf_s("%s", name, NAME_MAX);
+		}
+		else if (order == 2) {
+			printf("ì‚­ì œí•  í•™ìƒì˜ ì´ë¦„ : ");
+			scanf_s("%s", name, 50);
 			delete_node(name);
-			break;
-
-		case 3:
-		default:
-			iteration = 0;
-			break;
+		} else if (order == 3) {
+				end = 0;
 		}
 		print_nodes();
 	}

@@ -2,140 +2,220 @@
 #include<stdlib.h>
 #include<string.h>
 
-#define NAME_MAX 50
+enum rank {
+    rank1 = 1,
+    rank2,
+    rank3,
+    rank4,
+    rank5
+};
 
-struct NODE
-{
-	char name[NAME_MAX];
-	int score;
-	struct NODE* link;
+struct NODE {
+    char* customerName;
+    enum rank customerRank;
+    int order_amount;
+    int point;
+    struct NODE* prev;
+    struct NODE* next;
 };
 
 struct NODE* head;
 
-struct NODE* create_node(char* name, int score)
-{
-	struct NODE* new_node = (struct NODE*)malloc(sizeof(struct NODE));
-	strcpy_s(new_node->name, NAME_MAX, name);
-	new_node->score = score;
-	new_node->link = NULL;
+struct NODE* create_node(char* customerName, enum rank customerRank, int order_amount, int point) {
+    struct NODE* new_node = (struct NODE*)malloc(sizeof(struct NODE));
+    new_node->customerName = (char*)malloc(strlen(customerName) + 1);
+    strcpy_s(new_node->customerName, strlen(customerName) + 1, customerName);
+    new_node->customerRank = customerRank;
+    new_node->order_amount = order_amount;
+    new_node->point = point;
+    new_node->prev = NULL;
+    new_node->next = NULL;
 
-	return new_node;
+    return new_node;
 }
 
-struct NODE* last_node()
-{
-	struct NODE* cur = head;
-	while (cur->link != NULL) {
-		cur = cur->link;
-	}
-	return cur;
+struct NODE* last_node() {
+    struct NODE* cur = head;
+    while (cur->next != NULL) {
+        cur = cur->next;
+    }
+    return cur;
 }
 
-struct NODE* find_node_insert(int score)
-{
-	struct NODE* prev = head;
-	struct NODE* cur = head->link;
-	if (cur == NULL) return head;
+struct NODE* find_node_insert(enum rank customerRank, int order_amount, int point) {
+    struct NODE* cur = head->next;
 
+    while (cur != NULL) {
+        if (cur->customerRank > customerRank) {
+            return cur;
+        }
+        else if (cur->customerRank == customerRank) {
+            if (cur->order_amount < order_amount) {
+                return cur;
+            }
+            else if (cur->order_amount == order_amount) {
+                if (cur->point < point) {
+                    return cur;
+                }
+            }
+        }
+        cur = cur->next;
+    }
 
-	while (cur != NULL) {
-		if (cur->score >= score) {
-			if (cur->link == NULL) return cur;
-
-			prev = cur;
-			cur = cur->link;
-		}
-		else {
-			return prev;
-		}
-	}
+    return NULL;
 }
 
-void insert_node_priority(struct NODE* new_node)
-{
-	struct NODE* priority = find_node_insert(new_node->score);
-	new_node->link = priority->link;
-	priority->link = new_node;
+void insert_node_priority(struct NODE* new_node) {
+    struct NODE* priority = find_node_insert(new_node->customerRank, new_node->order_amount, new_node->point);
+    struct NODE* last = last_node();
+
+    if (priority == NULL) {
+        last->next = new_node;
+        new_node->prev = last;
+    }
+    else if (priority != NULL) {
+        new_node->next = priority;
+        new_node->prev = priority->prev;
+
+        priority->prev->next = new_node;
+
+        priority->prev = new_node;
+    }
 }
 
-void insert_node_last(struct NODE* new_node)
-{
-	struct NODE* last = last_node();
-	last->link = new_node;
+void insert_node_last(struct NODE* new_node) {
+    struct NODE* last = last_node();
+    last->next = new_node;
 }
 
-void print_nodes()
-{
-	struct NODE* cur = head->link;
-	printf("--------------------\n");
-	while (cur != NULL) {
-		printf("%s : %d\n", cur->name, cur->score);
-		cur = cur->link;
-	}
-	printf("--------------------\n");
+void print_nodes() {
+    struct NODE* cur = head->next;
+    printf("--------------------\n");
+    while (cur != NULL) {
+        printf("%së‹˜ì˜ ë­í¬ : %d\n", cur->customerName, cur->customerRank);
+        printf("%së‹˜ì˜ êµ¬ë§¤ëŸ‰ : %d\n", cur->customerName, cur->order_amount);
+        printf("%së‹˜ì˜ í¬ì¸íŠ¸ : %d\n", cur->customerName, cur->point);
+        cur = cur->next;
+    }
+    printf("--------------------\n");
 }
 
-int delete_node(char* name)
-{
-	struct NODE* prev = head;
-	struct NODE* cur = head->link;
-	while (cur != NULL) {
-		if (strcmp(name, cur->name) == 0) {
-			prev->link = cur->link;
-			free(cur);
-			return 1;
-		}
+int delete_node(char* customerName) {
+    struct NODE* prev = head;
+    struct NODE* cur = head->next;
 
-		prev = cur;
-		cur = cur->link;
-	}
-	return 0;
+    while (cur != NULL) {
+        if (strcmp(customerName, cur->customerName) == 0) {
+            prev->next = cur->next;
+            free(cur);
+            return 1;
+        }
+
+        prev = cur;
+        cur = cur->next;
+    }
+    return 0;
 }
 
-int main()
-{
-	head = (struct NODE*)malloc(sizeof(struct NODE));
-	head->link = NULL;
+void change_nodes(char* customerName) {
+    struct NODE* cur = head->next;
 
-	int inst;
-	int iteration = 1;
+    while (cur != NULL) {
+        if (strcmp(customerName, cur->customerName) == 0) {
 
-	char name[NAME_MAX];
-	int score;
+            int rank;
+            int amount;
+            int point;
 
-	while (iteration) {
-		printf("1. °í°´ Ãß°¡\n");
-		printf("2. °í°´ »èÁ¦\n");
-		printf("3. °í°´ Á¤º¸ ¼öÁ¤\n");
-		printf("¸í·É ÀÔ·Â : ");
-		scanf_s("%d", &inst);
+            printf("ìƒˆë¡œìš´ ê³ ê° ë“±ê¸‰ (0~4) : ");
+            scanf_s("%d", &rank);
+            cur->customerRank = (enum rank)rank;
 
-		switch (inst)
-		{
-		case 1:
-			printf("°í°´ ÀÌ¸§ : ");
-			scanf_s("%s", name, NAME_MAX);
+            printf("ìƒˆë¡œìš´ êµ¬ë§¤ëŸ‰ : ");
+            scanf_s("%d", &amount);
+            cur->order_amount = amount;
 
-			printf("°í°´ µî±Ş : ");
-			scanf_s("%d", &score);
+            printf("ìƒˆë¡œìš´ í¬ì¸íŠ¸ : ");
+            scanf_s("%d", &point);
+            cur->point = point;
 
-			insert_node_priority(create_node(name, score));
+            if (cur->prev != NULL) {
+                cur->prev->next = cur->next;
+            }
 
-			break;
-		case 2:
-			printf("»èÁ¦ÇÒ °í°´ÀÇ ÀÌ¸§ : ");
-			scanf_s("%s", name, NAME_MAX);
-			delete_node(name);
-			break;
+            if (cur->next != NULL) {
+                cur->next->prev = cur->prev;
+            }
 
-		case 3:
-		default:
-			iteration = 0;
-			break;
-		}
-		print_nodes();
-	}
+            insert_node_priority(cur);
 
-	return 0;
+            return 1;
+        }
+        cur = cur->next;
+    }
+    printf("í•´ë‹¹ ê³ ê°ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.\n");
+}
+
+int main() {
+    head = (struct NODE*)malloc(sizeof(struct NODE));
+    head->next = NULL;
+
+    int order;
+    int end = 1;
+
+    char name[50];
+    int rank;
+    int amount;
+    int point;
+
+    while (end) {
+        printf("1. ê³ ê° ì¶”ê°€\n");
+        printf("2. ê³ ê° ì‚­ì œ\n");
+        printf("3. ê³ ê° ì •ë³´ ìˆ˜ì •\n");
+        printf("4. ì „ì²´ ë¦¬ìŠ¤íŠ¸ ì¶œë ¥\n");
+        printf("5. í”„ë¡œê·¸ë¨ ì¢…ë£Œ\n");
+        printf("ëª…ë ¹ ì…ë ¥ : ");
+        scanf_s("%d", &order);
+        printf("\n");
+
+        if (order == 1) {
+            printf("ê³ ê° ì´ë¦„ : ");
+            scanf_s("%s", name, 50);
+
+            printf("ê³ ê° ë“±ê¸‰(0~4) : ");
+            scanf_s("%d", &rank);
+
+            printf("ê³ ê° êµ¬ë§¤ëŸ‰ : ");
+            scanf_s("%d", &amount);
+
+            printf("ê³ ê° í¬ì¸íŠ¸ : ");
+            scanf_s("%d", &point);
+            printf("\n");
+
+            insert_node_priority(create_node(name, (enum rank)rank, amount, point));
+        }
+
+        if (order == 2) {
+            printf("ì‚­ì œí•  ê³ ê°ì˜ ì´ë¦„ : ");
+            scanf_s("%s", name, 50);
+            delete_node(name);
+        }
+
+        if (order == 3) {
+            printf("ìˆ˜ì •í•  ê³ ê°ì˜ ì´ë¦„ : ");
+            scanf_s("%s", name, 50);
+
+            change_nodes(name);
+        }
+
+        if (order == 4) {
+            print_nodes();
+        }
+
+        if (order == 5) {
+            end = 0;
+        }
+    }
+
+    return 0;
 }
