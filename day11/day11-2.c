@@ -1,9 +1,9 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
 
 double f(double x) {
-	double f = -log10(1/x) + sin(x);
+	double f = -log10(1 / x) + sin(x);
 	return f;
 }
 
@@ -31,7 +31,7 @@ int main(void) {
 			sum += height * length;
 		}
 
-		printf("%.0lf : %.6lf", pow(2, i), sum);
+		printf("구간\t%.0lf 적분 결과 : %.6lf", pow(2, i), sum);
 		printf("\n");
 	}
 
