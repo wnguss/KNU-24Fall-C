@@ -21,12 +21,12 @@ int main(void) {
 
 	double sum = 0;
 
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i <= n; i++) {
 		double length = (b - a) / pow(2, i);
 
 		sum = 0;
 
-		for (int j = 0; j < pow(2, i); j++) {
+		for (int j = 0; j <= pow(2, i); j++) {
 			double height = f(a + j * length);
 			sum += height * length;
 		}
