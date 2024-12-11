@@ -12,16 +12,32 @@ int length;
 int choose_map;
 int width_rand[11];
 int height_rand[11];
+int easy_score[10] = { 0 }, normal_score[10] = { 0 }, hard_score[10] = { 0 };
+int order;
 
 // Function to generate the fruit 
 // within the boundary 
 void setup()
 {
     gameover = 0;
-    x = height / 2;
-    y = width / 2;
+    x = height / 2 - 1; //1번 맵일 때 만으로 수정해야 함, 맵 가운데가 #이라 가운데 스폰은 안될 거 같음
+    y = width / 2 - 1;
 
     length = 0;
+    
+    int k = 0;
+    while (k <= 10) {
+        if (width_rand[k] == width || height_rand[k] == height) {
+            continue;
+        }
+        else {
+            width_rand[k] = rand() % width;
+            height_rand[k] = rand() % height;
+            k++;
+        }
+    }
+
+    flag = 0; //다시 맵을 켰을 때 방향 초기화
 
     fruitx = 0;
     while (fruitx == 0) {
@@ -41,18 +57,14 @@ void draw_map1() {
     system("cls");
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
-            if (i == 0 || i == width - 1 || j == 0 || j == height - 1 || (j == height / 2)) {
-                if (j == height / 2 && ((i > 0 && i < 4) || (i > width - 5 && i < width - 1))) {
-                    printf(" ");
-                    continue;
-                }
+            if (i == 0 || i == height - 1 || j == 0 || j == width - 1 || (j == width / 2 && !((i > 0 && i < 4) || (i > height - 5 && i < height - 1)))) {
                 printf("#");
             }
             else {
                 int isSnakePart = 0;
                 for (int k = 0; k < length; k++) {
                     if (tailX[k] == i && tailY[k] == j) {
-                        printf("□");
+                        printf("o");
                         isSnakePart = 1;
                         break;
                     }
@@ -60,7 +72,7 @@ void draw_map1() {
 
                 if (!isSnakePart) {
                     if (i == x && j == y)
-                        printf("□");
+                        printf("0");
                     else if (i == fruitx && j == fruity)
                         printf("*");
                     else
@@ -73,22 +85,30 @@ void draw_map1() {
 
     printf("score = %d", score);
     printf("\n");
-    printf("press X to quit the game");
+    printf("press X to quit the game\n");
 }
 
 void draw_map2() {
-
     system("cls");
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
-            if (i == 0 || i == width - 1 || j == 0 || j == height - 1 || (i == width_rand[i] && j == height_rand[j])) {
+            int rand_tile = 0;
+
+            for (int k = 0; k < 10; k++) {
+                if (i == width_rand[k] && j == height_rand[k]) {
+                    rand_tile = 1;
+                    break;
+                }
+            }
+
+            if (i == 0 || i == width - 1 || j == 0 || j == height - 1 || rand_tile) {
                 printf("#");
             }
             else {
                 int isSnakePart = 0;
                 for (int k = 0; k < length; k++) {
                     if (tailX[k] == i && tailY[k] == j) {
-                        printf("□");
+                        printf("o");
                         isSnakePart = 1;
                         break;
                     }
@@ -96,7 +116,7 @@ void draw_map2() {
 
                 if (!isSnakePart) {
                     if (i == x && j == y)
-                        printf("□");
+                        printf("0");
                     else if (i == fruitx && j == fruity)
                         printf("*");
                     else
@@ -109,7 +129,7 @@ void draw_map2() {
 
     printf("score = %d", score);
     printf("\n");
-    printf("press X to quit the game");
+    printf("press X to quit the game\n");
 }
 
 void draw_default() {
@@ -123,7 +143,7 @@ void draw_default() {
                 int isSnakePart = 0;
                 for (int k = 0; k < length; k++) {
                     if (tailX[k] == i && tailY[k] == j) {
-                        printf("□");
+                        printf("o");
                         isSnakePart = 1;
                         break;
                     }
@@ -131,7 +151,7 @@ void draw_default() {
 
                 if (!isSnakePart) {
                     if (i == x && j == y)
-                        printf("□");
+                        printf("0");
                     else if (i == fruitx && j == fruity)
                         printf("*");
                     else
@@ -144,7 +164,7 @@ void draw_default() {
 
     printf("score = %d", score);
     printf("\n");
-    printf("press X to quit the game");
+    printf("press X to quit the game\n");
 }
 
 // Function to take the input 
@@ -206,12 +226,39 @@ void logic()
         break;
     }
 
-    if (x < 0 || x >= height || y < 0 || y >= width)
+    if (x <= 0 || x >= height-1 || y <= 0 || y >= width-1)
         gameover = 1;
+
+    if (choose_map == 1) {
+        if (y == width / 2 && !(x > 0 && x < 4) && !(x > height - 5 && x < height - 1)) {
+            gameover = 1;
+        }
+    }
+
+    if (choose_map == 2) {
+        for (int i = 0; i <= 10; i++) {
+            if (x == width_rand[i] && y == height_rand[i])
+                gameover = 1;
+        }
+    }
 
     for (int i = 0; i < length; i++) {
         if (tailX[i] == x && tailY[i] == y) {
             gameover = 1;
+        }
+    }
+
+    //여기까지 했음. 일단 노말 스코어만 계속 저장하게끔. 나중에 난이도 여기에 넣으면 if나 case로 분리하면 될 듯
+    if (gameover == 1) {
+        int i;
+        for (i = 0; i < 10; i++) {
+            if (score > normal_score[i]) {
+                for (int j = 9; j > i; j--) {
+                    normal_score[j] = normal_score[j - 1];
+                }
+                normal_score[i] = score;
+                break;
+            }
         }
     }
 
@@ -233,77 +280,104 @@ void logic()
 }
 
 void lobby() {
-    int order;
-
-    printf("로비 입니다.\n");
-    printf("맵 변경 1번, 랭킹 2번, 시작 3번 : ");
+    printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ로비ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n");
+    printf("맵 변경 1번, 랭킹 2번, 시작 3번, 종료 4번\n");
+    printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n");
+    printf(">> ");
     scanf_s("%d", &order);
 
     if (order == 1) {
-        printf("맵을 선택하세요. (1, 2) : ");
+        printf("맵을 선택하세요. (1, 2, 3) : ");
         scanf_s("%d", &choose_map);
+        lobby();
     }
     else if (order == 2) {
-        printf("미구현");
+        //ranking(); 랭킹에서 자꾸 오류가 뜸 선배께 여쭤보기
     }
     else if (order == 3) {
-        printf("start");
+        printf("Loading...\n");
+    }
+    else if (order == 4) {
+        printf("게임 종료\n");
     }
     else {
         printf("잘못된 입력입니다.\n");
-        return 0;
     }
 }
 
-void mode() {
+/*void ranking() {
+    int rank;
+    printf("1 : easy 랭킹\n 2 : normal 랭킹\n 3 : hard 랭킹\n 선택 : ");
+    scanf_s("%d", &rank, sizeof(rank));
 
-}
+    if (rank == 1) {
+        for (int i = 0; i < 10; i++) {
+            if (easy_score[i] != 0) {
+                printf("%d등 : %d점\n", i + 1, easy_score[i]);
+            }
+        }
+    }
+    else if (rank == 2) {
+        for (int i = 0; i < 10; i++) {
+            if (normal_score[i] != 0) {
+                printf("%d등 : %d점\n", i + 1, normal_score[i]);
+            }
+        }
+    }
+    else if (rank == 3) {
+        for (int i = 0; i < 10; i++) {
+            if (hard_score[i] != 0) {
+                printf("%d등 : %d점\n", i + 1, hard_score[i]);
+            }
+        }
+    }
+    else {
+        printf("잘못된 선택입니다.\n");
+    }
+}*/
 
 void main()
 {
     int k = 0;
 
-    srand(time(NULL));
+    while (order != 4) {
 
-    while(k<=10) {
-        if (width_rand[k] == width || height_rand[k] == height){
-            continue;
-        }
-        else {
-            width_rand[k] = rand() % width;
-            height_rand[k] = rand() % height;
-            k++;
-        }
-    }
+        srand(time(NULL));
 
-    lobby();
+        lobby();
 
-    mode();
+        if (order == 4)
+            break;
 
-    setup();
+        setup();
 
-    if (choose_map == 1) {
-        while (!gameover) {
-            draw_map1();
-            input();
-            logic();
-            Sleep(100);
+        if (choose_map == 1) {
+            while (!gameover) {
+                draw_map1();
+                input();
+                logic();
+                Sleep(100);
+            }
         }
-    }
-    else if (choose_map == 2) {
-        while (!gameover) {
-            draw_map2();
-            input();
-            logic();
-            Sleep(100);
+        else if (choose_map == 2) {
+            while (!gameover) {
+                draw_map2();
+                input();
+                logic();
+                Sleep(100);
+            }
         }
-    }
-    else {
-        while (!gameover) {
-            draw_default();
-            input();
-            logic();
-            Sleep(100);
+        else if (choose_map == 3) {
+            while (!gameover) {
+                draw_default();
+                input();
+                logic();
+                Sleep(100);
+            }
         }
+        else
+            printf("해당 맵은 존재하지 않습니다.\n");
     }
 }
+
+//이제 함수 하나 만들어서 과일xy 둘 다 입력받게 한 다음, # 위치에 만들어졌으면 다시 만들게 setup이랑 logic 수정해야함
