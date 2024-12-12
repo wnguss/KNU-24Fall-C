@@ -510,7 +510,7 @@ int check_fruits(fruitx, fruity) {
 
 void lobby() {
     printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ로비ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n");
-    printf("맵 변경 1번, 난이도 선택 2번, 랭킹 3번, 시작 4번, 종료 5번\n");
+    printf("맵 선택 1번, 난이도 선택 2번, 랭킹 3번, 시작 4번, 종료 5번\n");
     printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n");
     printf(">> ");
     scanf_s("%d", &order);
