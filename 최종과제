@@ -319,18 +319,45 @@ void logic()
         }
     }
 
-    //여기까지 했음. 일단 노말 스코어만 계속 저장하게끔. 나중에 난이도 여기에 넣으면 if나 case로 분리하면 될 듯
     if (gameover == 1) {
-        int i;
-        for (i = 0; i < 10; i++) {
-            if (score > normal_score[i]) {
-                for (int j = 9; j > i; j--) {
-                    normal_score[j] = normal_score[j - 1];
+        if (choose_mode == 1) {
+            int i;
+            for (i = 0; i < 10; i++) {
+                if (score > easy_score[i]) {
+                    for (int j = 9; j > i; j--) {
+                        easy_score[j] = easy_score[j - 1];
+                    }
+                    easy_score[i] = score;
+                    break;
                 }
-                normal_score[i] = score;
-                break;
             }
         }
+        else if (choose_mode == 2) {
+            int i;
+            for (i = 0; i < 10; i++) {
+                if (score > normal_score[i]) {
+                    for (int j = 9; j > i; j--) {
+                        normal_score[j] = normal_score[j - 1];
+                    }
+                    normal_score[i] = score;
+                    break;
+                }
+            }
+        }
+        else {
+            int i;
+            for (i = 0; i < 10; i++) {
+                if (score > hard_score[i]) {
+                    for (int j = 9; j > i; j--) {
+                        hard_score[j] = hard_score[j - 1];
+                    }
+                    hard_score[i] = score;
+                    break;
+                }
+            }
+        }
+
+
     }
 
     if (x == fruitx && y == fruity) {
@@ -375,9 +402,9 @@ void logic()
     }
 }
 
-/*void ranking() {
+void ranking() {
     int rank;
-    printf("1 : easy 랭킹\n 2 : normal 랭킹\n 3 : hard 랭킹\n 선택 : ");
+    printf("1 : easy 랭킹\n2 : normal 랭킹\n3 : hard 랭킹\n선택 : ");
     scanf_s("%d", &rank, sizeof(rank));
 
     if (rank == 1) {
@@ -404,7 +431,7 @@ void logic()
     else {
         printf("잘못된 선택입니다.\n");
     }
-}*/
+}
 
 void mode() {
     printf("난이도 설정.\n");
@@ -412,25 +439,25 @@ void mode() {
     printf("2. 보통\n");
     printf("3.어려움\n");
     while (1) {
-        printf("원하는 난이도를 선택하세요: ");
+        printf("원하는 난이도를 선택하세요 : ");
         scanf_s("%d", &choose_mode);
         if (choose_mode == 1) {
-            printf("쉬움 난이도 선택");
+            printf("쉬움 난이도 선택\n");
             Sleep(300);
             break;
         }
         else if (choose_mode == 2) {
-            printf("보통 난이도 선택");
+            printf("보통 난이도 선택\n");
             Sleep(300);
             break;
         }
         else if (choose_mode == 3) {
-            printf("어려움 난이도 선택");
+            printf("어려움 난이도 선택\n");
             Sleep(300);
             break;
         }
         else {
-            printf("잘못된 입력입니다.");
+            printf("잘못된 입력입니다.\n");
         }
     }
 }
@@ -495,9 +522,11 @@ void lobby() {
     }
     else if (order == 2) {
         mode();
+        lobby();
     }
     else if (order == 3) {
-        //ranking();
+        ranking();
+        lobby();
     }
     else if (order == 4) {
         printf("Loading...\n");
@@ -520,7 +549,7 @@ void main()
 
         lobby();
 
-        if (order == 4)
+        if (order == 5)
             break;
 
         setup();
