@@ -7,24 +7,64 @@
 int i, j, height = 20, width = 20;
 int gameover, score;
 int x, y, fruitx, fruity, flag;
-int tailX[100], tailY[100];
-int length;
+int flag_div, x_div, y_div; // 분할 뱀
+int item_mapx, item_mapy, item_divx, item_divy, item_halfx, item_halfy; // 아이템
+int tailX[100], tailY[100], tailX_div[100], tailY_div[100];  // 뱀의 몸통 좌표 배열
+int length, length_div;  // 뱀의 길이
 int choose_map;
 int width_rand[11];
 int height_rand[11];
 int easy_score[10] = { 0 }, normal_score[10] = { 0 }, hard_score[10] = { 0 };
 int order;
+int choose_mode;
 
 // Function to generate the fruit 
 // within the boundary 
 void setup()
 {
+    // 난이도 쉬움 
+    if (choose_mode == 1) {
+        height = 28, width = 28;
+        x = height / 2 - 5;
+        y = width / 2 - 5;
+    }
+    // 난이도 보통 
+    if (choose_mode == 2) {
+        x = height / 2;
+        y = width / 2;
+    }
+    // 난이도 어려움
+    if (choose_mode == 3) {
+        x = height / 2;
+        y = width / 2;
+
+        // 맵 줄이는 아이템 생성
+        item_mapx = 0;
+        while (item_mapx == 0) {
+            item_mapx = rand() % height;
+        }
+
+        item_mapy = 0;
+        while (item_mapy == 0) {
+            item_mapy = rand() % width;
+        }
+
+        // 분할 아이템 생성
+        item_divx = 0;
+        while (item_divx == 0) {
+            item_divx = rand() % height;
+        }
+
+        item_divy = 0;
+        while (item_divy == 0) {
+            item_divy = rand() % width;
+        }
+    }
+    
     gameover = 0;
-    x = height / 2 - 1; //1번 맵일 때 만으로 수정해야 함, 맵 가운데가 #이라 가운데 스폰은 안될 거 같음
-    y = width / 2 - 1;
 
     length = 0;
-    
+
     int k = 0;
     while (k <= 10) {
         if (width_rand[k] == width || height_rand[k] == height) {
@@ -49,6 +89,19 @@ void setup()
         fruity = rand() % 20;
     }
 
+    // 꼬리 절반 줄이는 아이템 생성
+    item_halfx = 0;
+    while (item_halfx == 0) {
+        item_halfx = rand() % height;
+    }
+
+    item_halfy = 0;
+    while (item_halfy == 0) {
+        item_halfy = rand() % width;
+    }
+
+    check_fruits(fruitx, fruity);
+
     score = 0;
 }
 
@@ -64,7 +117,7 @@ void draw_map1() {
                 int isSnakePart = 0;
                 for (int k = 0; k < length; k++) {
                     if (tailX[k] == i && tailY[k] == j) {
-                        printf("o");
+                        printf("□");
                         isSnakePart = 1;
                         break;
                     }
@@ -72,9 +125,15 @@ void draw_map1() {
 
                 if (!isSnakePart) {
                     if (i == x && j == y)
-                        printf("0");
+                        printf("□");
                     else if (i == fruitx && j == fruity)
                         printf("*");
+                    else if (i == item_mapx && j == item_mapy) // 맵 줄이기 아이템
+                        printf("▣");
+                    else if (i == item_halfx && j == item_halfy) // 꼬리 절반 줄이기 아이템
+                        printf("♥");
+                    else if (i == item_divx && j == item_divy) // 분할 아이템
+                        printf("↔");
                     else
                         printf(" ");
                 }
@@ -108,7 +167,7 @@ void draw_map2() {
                 int isSnakePart = 0;
                 for (int k = 0; k < length; k++) {
                     if (tailX[k] == i && tailY[k] == j) {
-                        printf("o");
+                        printf("□");
                         isSnakePart = 1;
                         break;
                     }
@@ -116,9 +175,15 @@ void draw_map2() {
 
                 if (!isSnakePart) {
                     if (i == x && j == y)
-                        printf("0");
+                        printf("□");
                     else if (i == fruitx && j == fruity)
                         printf("*");
+                    else if (i == item_mapx && j == item_mapy) // 맵 줄이기 아이템
+                        printf("▣");
+                    else if (i == item_halfx && j == item_halfy) // 꼬리 절반 줄이기 아이템
+                        printf("♥");
+                    else if (i == item_divx && j == item_divy) // 분할 아이템
+                        printf("↔");
                     else
                         printf(" ");
                 }
@@ -143,7 +208,7 @@ void draw_default() {
                 int isSnakePart = 0;
                 for (int k = 0; k < length; k++) {
                     if (tailX[k] == i && tailY[k] == j) {
-                        printf("o");
+                        printf("□");
                         isSnakePart = 1;
                         break;
                     }
@@ -151,9 +216,15 @@ void draw_default() {
 
                 if (!isSnakePart) {
                     if (i == x && j == y)
-                        printf("0");
+                        printf("□");
                     else if (i == fruitx && j == fruity)
                         printf("*");
+                    else if (i == item_mapx && j == item_mapy) // 맵 줄이기 아이템
+                        printf("▣");
+                    else if (i == item_halfx && j == item_halfy) // 꼬리 절반 줄이기 아이템
+                        printf("♥");
+                    else if (i == item_divx && j == item_divy) // 분할 아이템
+                        printf("↔");
                     else
                         printf(" ");
                 }
@@ -226,7 +297,7 @@ void logic()
         break;
     }
 
-    if (x <= 0 || x >= height-1 || y <= 0 || y >= width-1)
+    if (x <= 0 || x >= height - 1 || y <= 0 || y >= width - 1)
         gameover = 1;
 
     if (choose_map == 1) {
@@ -274,34 +345,33 @@ void logic()
             fruity = rand() % 20;
         }
 
+        check_fruits(fruitx, fruity);
+
         score += 10;
+        if (choose_mode == 1) {
+            score += 10;
+        }
         length++;
     }
-}
+    // 맵 줄이기 아이템 먹었을 때
+    if (x == item_mapx && y == item_mapy) {
+        height = 16, width = 16;
 
-void lobby() {
-    printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ로비ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n");
-    printf("맵 변경 1번, 랭킹 2번, 시작 3번, 종료 4번\n");
-    printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n");
-    printf(">> ");
-    scanf_s("%d", &order);
+        item_mapx = 0;
+        item_mapy = 0;
+    }
+    // 꼬리 절반 줄이는 아이템 먹었을 때
+    if (x == item_halfx && y == item_halfy) {
+        length = length / 2;
 
-    if (order == 1) {
-        printf("맵을 선택하세요. (1, 2, 3) : ");
-        scanf_s("%d", &choose_map);
-        lobby();
+        item_halfx = 0;
+        item_halfy = 0;
     }
-    else if (order == 2) {
-        //ranking(); 랭킹에서 자꾸 오류가 뜸 선배께 여쭤보기
-    }
-    else if (order == 3) {
-        printf("Loading...\n");
-    }
-    else if (order == 4) {
-        printf("게임 종료\n");
-    }
-    else {
-        printf("잘못된 입력입니다.\n");
+
+    // 점수가 200의 배수일 때 꼬리 절반 줄이는 아이템 생성
+    if (score % 200 == 0 && item_halfx == 0 && item_halfy == 0) {
+        item_halfx = rand() % height;
+        item_halfy = rand() % width;
     }
 }
 
@@ -336,11 +406,115 @@ void lobby() {
     }
 }*/
 
+void mode() {
+    printf("난이도 설정.\n");
+    printf("1. 쉬움\n");
+    printf("2. 보통\n");
+    printf("3.어려움\n");
+    while (1) {
+        printf("원하는 난이도를 선택하세요: ");
+        scanf_s("%d", &choose_mode);
+        if (choose_mode == 1) {
+            printf("쉬움 난이도 선택");
+            Sleep(300);
+            break;
+        }
+        else if (choose_mode == 2) {
+            printf("보통 난이도 선택");
+            Sleep(300);
+            break;
+        }
+        else if (choose_mode == 3) {
+            printf("어려움 난이도 선택");
+            Sleep(300);
+            break;
+        }
+        else {
+            printf("잘못된 입력입니다.");
+        }
+    }
+}
+
+int check_fruits(fruitx, fruity) {
+    if (fruity == width || fruitx == height) {
+        fruitx = 0;
+        while (fruitx == 0) {
+            fruitx = rand() % 20;
+        }
+
+        fruity = 0;
+        while (fruity == 0) {
+            fruity = rand() % 20;
+        }
+    }
+
+    if (choose_map == 1) {
+        if (fruitx == (y == width / 2 && !(x > 0 && x < 4) && !(x > height - 5 && x < height - 1)) || 
+            fruity == (y == width / 2 && !(x > 0 && x < 4) && !(x > height - 5 && x < height - 1))) {
+            fruitx = 0;
+            while (fruitx == 0) {
+                fruitx = rand() % 20;
+            }
+
+            fruity = 0;
+            while (fruity == 0) {
+                fruity = rand() % 20;
+            }
+        }
+    }
+
+    if (choose_map == 2) {
+        for (int i = 0; i <= 10; i++) {
+            if (fruitx == width_rand[i] && fruity == height_rand[i])
+                fruitx = 0;
+            while (fruitx == 0) {
+                fruitx = rand() % 20;
+            }
+
+            fruity = 0;
+            while (fruity == 0) {
+                fruity = rand() % 20;
+        }
+    }
+    }
+
+    return fruitx, fruity;
+}
+
+void lobby() {
+    printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ로비ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n");
+    printf("맵 변경 1번, 난이도 선택 2번, 랭킹 3번, 시작 4번, 종료 5번\n");
+    printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n");
+    printf(">> ");
+    scanf_s("%d", &order);
+
+    if (order == 1) {
+        printf("맵을 선택하세요. (1, 2, 3) : ");
+        scanf_s("%d", &choose_map);
+        lobby();
+    }
+    else if (order == 2) {
+        mode();
+    }
+    else if (order == 3) {
+        //ranking();
+    }
+    else if (order == 4) {
+        printf("Loading...\n");
+    }
+    else if (order == 5) {
+        printf("게임 종료\n");
+    }
+    else {
+        printf("잘못된 입력입니다.\n");
+    }
+}
+
 void main()
 {
     int k = 0;
 
-    while (order != 4) {
+    while (order != 5) {
 
         srand(time(NULL));
 
@@ -379,5 +553,3 @@ void main()
             printf("해당 맵은 존재하지 않습니다.\n");
     }
 }
-
-//이제 함수 하나 만들어서 과일xy 둘 다 입력받게 한 다음, # 위치에 만들어졌으면 다시 만들게 setup이랑 logic 수정해야함
