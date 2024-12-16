@@ -91,6 +91,7 @@ void setup()
         fruity = rand() % 20;
     }
 
+    check_fruits(&fruitx, &fruity); // 과일이 제대로 생성되는지 체크
 
     // 꼬리 절반 줄이는 아이템 생성
     item_halfx = 0;
@@ -102,8 +103,6 @@ void setup()
     while (item_halfy == 0) {
         item_halfy = rand() % width;
     }
-
-    check_fruits(fruitx, fruity); // 과일을 검사하는 함수 실행
 
     score = 0;
 }
@@ -406,6 +405,9 @@ void logic_div() // 분할 뱀의 로직
         while (fruity == 0) {
             fruity = rand() % 20;
         }
+
+        check_fruits(fruitx, fruity);
+
     }
     // 맵 줄이기 아이템 먹었을 때
     if (x_div == item_mapx && y_div == item_mapy) {
@@ -545,9 +547,9 @@ void logic()
             score += 10;
         }
         length++;
-    }
 
-    check_fruits(fruitx, fruity);
+        check_fruits(fruitx, fruity);
+    }
 
     // 맵 줄이기 아이템 먹었을 때
     if (x == item_mapx && y == item_mapy) {
@@ -638,27 +640,22 @@ void mode() { // 난이도 함수
     }
 }
 
-int check_fruits(fruitx, fruity) { // 열매가 벽에 생성되는지 확인
+int check_fruits(int fruitx, int fruity) { // 열매가 벽에 생성되는지 확인
 
-    if (choose_map == 1) { // 각 맵 조건 별로 확인
-        while (fruitx == width || fruity == height || fruitx == 0 || fruity == 0 || fruitx == (y == width / 2 && !(x > 0 && x < 4) && !(x > height - 5 && x < height - 1)) ||
-            fruity == (y == width / 2 && !(x > 0 && x < 4) && !(x > height - 5 && x < height - 1))) {
-            fruitx = 0;
-            fruitx = rand() % 20;
-
-            fruity = 0;
-            fruity = rand() % 20;
+    if (choose_map == 1) {
+        while (fruitx == width || fruity == height || fruitx == 0 || fruity == 0 ||
+            (fruitx == width / 2 && !(y > 0 && y < 4) && !(y > height - 5 && y < height - 1))) {
+            fruitx = rand() % (width - 1);
+            fruity = rand() % (height - 1);
         }
     }
 
     if (choose_map == 2) {
         for (int i = 0; i <= 10; i++) {
-            while ((fruitx != width_rand[i] && fruity != height_rand[i]) || fruitx == 0 || fruity == 0 || fruitx == width || fruity == height) {
-                fruitx = 0;
-                fruitx = rand() % 20;
-
-                fruity = 0;
-                fruity = rand() % 20;
+            while ((fruitx == width_rand[i] && fruity == height_rand[i]) || fruitx == 0 || fruity == 0 ||
+                fruitx == width || fruity == height) {
+                fruitx = rand() % (width - 1);
+                fruity = rand() % (height - 1);
             }
         }
     }
