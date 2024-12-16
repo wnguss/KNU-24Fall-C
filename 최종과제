@@ -11,12 +11,12 @@ int flag_div, x_div, y_div, div_snake = 0; // 분할 뱀
 int item_mapx, item_mapy, item_divx, item_divy, item_halfx, item_halfy; // 아이템
 int tailX[100], tailY[100], tailX_div[100], tailY_div[100];  // 뱀의 몸통 좌표 배열
 int length, length_div;  // 뱀의 길이
-int choose_map;
-int width_rand[11];
-int height_rand[11];
-int easy_score[10] = { 0 }, normal_score[10] = { 0 }, hard_score[10] = { 0 };
-int order;
-int choose_mode;
+int choose_map; // 맵 선택을 위한 변수
+int width_rand[11]; // 2번 맵에서 랜덤 할당을 위한 길이 변수
+int height_rand[11]; // 2번 맵에서 랜덤 할당을 위한 높이 변수
+int easy_score[10] = { 0 }, normal_score[10] = { 0 }, hard_score[10] = { 0 }; // 랭킹을 위한 스코어 배열
+int order; // 로비에서 명령을 받기 위한 변수
+int choose_mode; // 모드를 선택하기 위한 변수
 
 // Function to generate the fruit 
 // within the boundary 
@@ -67,7 +67,7 @@ void setup()
 
     length = 0;
 
-    int k = 0;
+    int k = 0; // 만약 랜덤 #이 벽에 생성되면 다시 실행
     while (k <= 10) {
         if (width_rand[k] == width || height_rand[k] == height) {
             continue;
@@ -81,7 +81,7 @@ void setup()
 
     flag = 0; //다시 맵을 켰을 때 방향 초기화
 
-    fruitx = 0;
+    fruitx = 0; // 과일이 벽에 생성되면 다시 실행
     while (fruitx == width || fruitx == 0) {
         fruitx = rand() % 20;
     }
@@ -103,16 +103,16 @@ void setup()
         item_halfy = rand() % width;
     }
 
-    check_fruits(fruitx, fruity);
+    check_fruits(fruitx, fruity); // 과일을 검사하는 함수 실행
 
     score = 0;
 }
 
 // Function to draw the boundaries 
-void draw_map1() {
+void draw_map1() { // 맵 1 함수
     system("cls");
     for (i = 0; i < height; i++) {
-        for (j = 0; j < width; j++) {
+        for (j = 0; j < width; j++) { // 중간에 벽 생성을 위한 if 조건문
             if (i == 0 || i == height - 1 || j == 0 || j == width - 1 || (j == width / 2 && !((i > 0 && i < 4) || (i > height - 5 && i < height - 1)))) {
                 printf("#");
             }
@@ -120,7 +120,7 @@ void draw_map1() {
                 int isSnakePart = 0;
                 for (int k = 0; k < length; k++) {
                     if (tailX[k] == i && tailY[k] == j) {
-                        printf("□");
+                        printf("□"); // 뱀의 모양 생성
                         isSnakePart = 1;
                         break;
                     }
@@ -150,20 +150,20 @@ void draw_map1() {
     printf("press X to quit the game\n");
 }
 
-void draw_map2() {
+void draw_map2() { // 맵 2 함수
     system("cls");
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
-            int rand_tile = 0;
+            int rand_tile = 0; // 랜덤 #을 생성을 판단하기 위한 변수
 
             for (int k = 0; k < 10; k++) {
-                if (i == width_rand[k] && j == height_rand[k]) {
+                if (i == width_rand[k] && j == height_rand[k]) { // 랜덤 x, y 좌표 판단
                     rand_tile = 1;
                     break;
                 }
             }
 
-            if (i == 0 || i == width - 1 || j == 0 || j == height - 1 || rand_tile) {
+            if (i == 0 || i == width - 1 || j == 0 || j == height - 1 || rand_tile) { // 벽 및 랜덤 위치에 # 출력
                 printf("#");
             }
             else {
@@ -200,11 +200,11 @@ void draw_map2() {
     printf("press X to quit the game\n");
 }
 
-void draw_default() {
+void draw_default() { // 기본 맵 함수
     system("cls");
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
-            if (i == 0 || i == width - 1 || j == 0 || j == height - 1) {
+            if (i == 0 || i == width - 1 || j == 0 || j == height - 1) { // 기본적인 벽 생성
                 printf("#");
             }
             else {
@@ -241,7 +241,7 @@ void draw_default() {
     printf("press X to quit the game\n");
 }
 
-void draw_div()
+void draw_div() // 분할 뱀 그리지
 {
     system("cls");
 
@@ -305,7 +305,7 @@ void input()
 
 }
 
-void input_div()
+void input_div() // 분할 뱀의 동작
 {
     if (_kbhit()) {
         switch (getch()) {
@@ -328,7 +328,7 @@ void input_div()
     }
 }
 
-void logic_div()
+void logic_div() // 분할 뱀의 로직
 {
     int prevX_div = tailX_div[0];
     int prevY_div = tailY_div[0];
@@ -465,29 +465,29 @@ void logic()
         break;
     }
 
-    if (x <= 0 || x >= height - 1 || y <= 0 || y >= width - 1)
+    if (x <= 0 || x >= height - 1 || y <= 0 || y >= width - 1) // 기본 사망 조건
         gameover = 1;
 
-    if (choose_map == 1) {
+    if (choose_map == 1) { // 가운데 벽에 닿았을 때 사망 조건
         if (y == width / 2 && !(x > 0 && x < 4) && !(x > height - 5 && x < height - 1)) {
             gameover = 1;
         }
     }
 
-    if (choose_map == 2) {
+    if (choose_map == 2) { // 랜덤 벽에 닿았을 때 사망 조건
         for (int i = 0; i <= 10; i++) {
             if (x == width_rand[i] && y == height_rand[i])
                 gameover = 1;
         }
     }
 
-    for (int i = 0; i < length; i++) {
+    for (int i = 0; i < length; i++) { // 본인 몸에 닿았을 때 사망 조건
         if (tailX[i] == x && tailY[i] == y) {
             gameover = 1;
         }
     }
 
-    if (gameover == 1) {
+    if (gameover == 1) { // 난이도 별로 스코어 정렬
         if (choose_mode == 1) {
             int i;
             for (i = 0; i < 10; i++) {
@@ -578,12 +578,12 @@ void logic()
 }
 
 
-void ranking() {
+void ranking() { // 랭킹 함수
     int rank;
     printf("1 : easy 랭킹\n2 : normal 랭킹\n3 : hard 랭킹\n선택 : ");
     scanf_s("%d", &rank, sizeof(rank));
 
-    if (rank == 1) {
+    if (rank == 1) { // 선택한 랭킹을 출력
         for (int i = 0; i < 10; i++) {
             if (easy_score[i] != 0) {
                 printf("%d등 : %d점\n", i + 1, easy_score[i]);
@@ -609,7 +609,7 @@ void ranking() {
     }
 }
 
-void mode() {
+void mode() { // 난이도 함수
     printf("난이도 설정.\n");
     printf("1. 쉬움\n");
     printf("2. 보통\n");
@@ -617,7 +617,7 @@ void mode() {
     while (1) {
         printf("원하는 난이도를 선택하세요 : ");
         scanf_s("%d", &choose_mode);
-        if (choose_mode == 1) {
+        if (choose_mode == 1) { // 난이도 별로 출력 및 break
             printf("쉬움 난이도 선택\n");
             Sleep(300);
             break;
@@ -638,9 +638,9 @@ void mode() {
     }
 }
 
-int check_fruits(fruitx, fruity) {
+int check_fruits(fruitx, fruity) { // 열매가 벽에 생성되는지 확인
 
-    if (choose_map == 1) {
+    if (choose_map == 1) { // 각 맵 조건 별로 확인
         while (fruitx == width || fruity == height || fruitx == 0 || fruity == 0 || fruitx == (y == width / 2 && !(x > 0 && x < 4) && !(x > height - 5 && x < height - 1)) ||
             fruity == (y == width / 2 && !(x > 0 && x < 4) && !(x > height - 5 && x < height - 1))) {
             fruitx = 0;
@@ -666,14 +666,14 @@ int check_fruits(fruitx, fruity) {
     return fruitx, fruity;
 }
 
-void lobby() {
+void lobby() { // 로비 함수
     printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ로비ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n");
     printf("맵 선택 1번, 난이도 선택 2번, 랭킹 3번, 시작 4번, 종료 5번\n");
     printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n");
     printf(">> ");
     scanf_s("%d", &order);
 
-    if (order == 1) {
+    if (order == 1) { // 명령 별로 내용 실행
         printf("맵을 선택하세요. (1, 2, 3) : ");
         scanf_s("%d", &choose_map);
         lobby();
@@ -701,19 +701,19 @@ void main()
 {
     int k = 0;
 
-    while (order != 5) {
+    while (order != 5) { // 로비에서 종료하기 전까지 반복
 
-        srand(time(NULL));
+        srand(time(NULL)); // 2번 맵 랜덤 매 라운드 변경
 
         lobby();
 
         if (order == 5)
             break;
 
-        if (order == 4) {
+        if (order == 4) { // 로비에서 4번 입력 시 돌입
             setup();
 
-            if (choose_map == 1) {
+            if (choose_map == 1) { // 각 맵 실행
                 while (!gameover) {
                     draw_map1();
                     input();
